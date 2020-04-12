@@ -49,7 +49,7 @@ global score, counter
 counter = 0
 score = 0
 t = Tk()
-t.title('Wybierz przycisk')
+t.title('Choose a button')
 t.geometry('300x350')
 insert_buttons(8)
 
