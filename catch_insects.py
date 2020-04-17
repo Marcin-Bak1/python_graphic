@@ -2,7 +2,8 @@ import pygame as pg
 import os
 import random
 import time
-import math
+
+### --- In this game player has to catch bugs when they appear to score. Bugs show up faster with time and if they reach a critical number the game ends --- ###
 
 pg.init()
 width = 600
@@ -19,11 +20,11 @@ class insect():
     def __init__(self):
         self.x = random.randint(0, width)
         self.y = random.randint(0, height)
-        self.h = 10
-        self.w = 10
+        self.h = 20
+        self.w = 20
         self.shape = pg.Rect(self.x, self.y, self.h, self.w)
         self.color = (0, 100, 0)
-        #self.sprite = #Apply when sprite ready
+        self.sprite = pg.image.load(os.path.join('insect_sprite.png'))
         self.dx = random.randint(-1, 1)
         self.dy = random.randint(-1, 1)
     def move(self):
@@ -31,6 +32,7 @@ class insect():
         self.y = self.y + self.dy
         self.dx = random.randint(-1, 1)
         self.dy = random.randint(-1, 1)
+        self.shape = pg.Rect(self.x, self.y, self.w, self.h)
     def if_catch(self, player):
         if self.shape.colliderect(player.shape):
             return True
@@ -38,29 +40,29 @@ class insect():
             return False
 
     def draw(self):
-        pg.draw.rect(screen, self.color, self.shape, 0)
-
+        screen.blit(self.sprite, (self.x, self.y))
+        pg.draw.rect(screen, self.color, self.shape, 1)
 class catcher():
     def __init__(self):
         self.x = width/2
         self.y = height/2
         self.dx = 0
         self.dy = 0
-        self.h = 50
-        self.w = 50
+        self.h = 30
+        self.w = 30
         self.color = (100, 0, 0)
         self.shape = pg.Rect(self.x, self.y, self.w, self.h)
-        #self.sprite = #add when sprite is ready
+        self.sprite = pg.image.load(os.path.join('hat_sprite.png'))
     def move(self, dx, dy):
         self.x = self.x + dx
         self.y = self.y + dy
         self.shape = pg.Rect(self.x, self.y, self.w, self.h)
     def draw(self):
-        pg.draw.rect(screen, self.color, self.shape, 0)
+        screen.blit(self.sprite, (self.x, self.y))
+        pg.draw.rect(screen, self.color, self.shape, 1)
 
 
 whatShows = 'menu'
-max_insects = 5
 delta = 10
 ddelta = 10
 while True:
@@ -85,6 +87,7 @@ while True:
                     ### --- Setting up the game --- ###
                     whatShows = 'gameplay'
                     player = catcher()
+                    max_insects = 10
                     enemies = []
                     start = time.time()
                     enemy_timer_start = time.time()
@@ -100,11 +103,13 @@ while True:
         enemy_timer_end = time.time() - enemy_timer_start
         delta_timer_end = time.time() - delta_timer_start
         if enemy_timer_end > delta:
+            ### --- This cause add insects after delta time --- ###
             new_enemy = insect()
             enemies.append(new_enemy)
             enemy_timer_start = time.time()
         if delta_timer_end > ddelta:
-            delta = delta/2
+            ### --- This cause makes sure that the bugs are added faster with time --- ###
+            delta = 3*delta/4
             delta_timer_start = time.time()
         for enemy in enemies:
             if enemy.if_catch(player):
@@ -120,12 +125,13 @@ while True:
             whatShows = 'gameover'
 
     elif whatShows == 'menu':
+        write('Welcome to bugs game', width / 2, 3*height / 4, 20)
         write('Press space to start', width/2, height/2, 20)
     elif whatShows == 'gameover':
         write('Game Over', width/2, height/2, 50)
         write('Your score = ' + str(score), width / 2, height - height / 3, 20)
         write('Press space to play again', width / 2, height - height / 4, 20)
 
-    time.sleep(0.0001)
+    time.sleep(0.0001) # This value is calibrated such that the gameplay is comfortable
     pg.display.update()
 
