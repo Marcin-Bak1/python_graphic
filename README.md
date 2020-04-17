@@ -1,2 +1,2 @@
-# python_graphic
-Developing a graphic interface for python programmes
+# python_games
+Those are simple game projects done with use of pygame
